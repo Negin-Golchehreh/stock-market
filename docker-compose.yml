@@ -1,0 +1,138 @@
+
+services:
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    hostname: namenode
+    restart: unless-stopped
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    environment:
+      - CLUSTER_NAME=bigdata-cluster
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - HDFS_CONF_dfs_replication=1
+      - HDFS_CONF_dfs_permissions_enabled=false
+      - HDFS_CONF_dfs_webhdfs_enabled=true
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ../data:/data
+    networks:
+      - bigdata-net
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    hostname: datanode
+    restart: unless-stopped
+    ports:
+      - "9864:9864"
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HDFS_CONF_dfs_replication=1
+      - HDFS_CONF_dfs_permissions_enabled=false
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - bigdata-net
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    hostname: resourcemanager
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - YARN_CONF_yarn_resourcemanager_hostname=resourcemanager
+    depends_on:
+      - namenode
+    networks:
+      - bigdata-net
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    hostname: nodemanager
+    restart: unless-stopped
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - YARN_CONF_yarn_resourcemanager_hostname=resourcemanager
+    depends_on:
+      - resourcemanager
+    networks:
+      - bigdata-net
+
+  spark-master:
+    image: bde2020/spark-master:3.3.0-hadoop3.3
+    container_name: spark-master
+    hostname: spark-master
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+    volumes:
+      - ../spark:/opt/spark-apps
+      - ../data:/data
+    networks:
+      - bigdata-net
+
+  spark-worker:
+    image: bde2020/spark-worker:3.3.0-hadoop3.3
+    container_name: spark-worker
+    hostname: spark-worker
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - SPARK_WORKER_MEMORY=26000m
+      - SPARK_WORKER_CORES=10
+    volumes:
+      - ../spark:/opt/spark-apps
+      - ../data:/data
+    depends_on:
+      - spark-master
+    networks:
+      - bigdata-net
+
+  
+  jupyter:
+    image: jupyter/pyspark-notebook:spark-3.3.0
+    container_name: jupyter
+    hostname: jupyter
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - SPARK_MASTER=spark://spark-master:7077
+    volumes:
+      - ../spark:/home/jovyan/work
+      - ../data:/home/jovyan/data
+      - ../ml:/home/jovyan/ml
+    depends_on:
+      - spark-master
+    networks:
+      - bigdata-net
+    user: root
+    command: >
+      bash -c "pip install -q kaggle scikit-learn xgboost matplotlib seaborn plotly joblib &&
+               start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --allow-root"
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+
+networks:
+  bigdata-net:
+    driver: bridge
