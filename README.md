@@ -75,7 +75,7 @@ docker-compose --version
 1. Fire up the Cluster
 Clone this repository to your Hetzner Instance or local terminal context and deploy the active stack daemon:
 ```bash
-git clone[https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+git clone https://github.com/Negin-Golchehreh/stock-market.git
 cd your-repo-name
 docker-compose up -d
 ```
