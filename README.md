@@ -1,88 +1,189 @@
 # End-to-End Big Data Analytics Pipeline: Stock Market Direction Prediction
 
-[cite_start]An enterprise-grade, distributed Big Data analytics pipeline designed to ingest, process, and analyze millions of rows of historical financial data[cite: 123, 124]. [cite_start]The system handles over 1.8 million raw records from major global indices, leveraging a containerized lambda-like cluster architecture to execute distributed data transformations and machine learning modeling[cite: 123, 136].
+This project implements an end-to-end Big Data analytics pipeline for stock market direction prediction. It is designed to ingest, store, process, analyze, and model large-scale historical financial data using a distributed container-based environment.
 
-[cite_start]This project was developed as a core requirement for the **MSc Data Analytics** program at the **Berlin School of Business & Innovation (BSBI)**[cite: 97, 98, 99].
+The pipeline processes more than 1.8 million raw records from major global stock market indices. It uses Hadoop, Spark, Hive, PySpark, and machine learning models to transform raw historical market data into structured analytical outputs and predictive results.
+
+This project was developed as part of the MSc Data Analytics programme at the Berlin School of Business & Innovation (BSBI).
 
 ---
 
-## 🏗️ System Architecture & Infrastructure
+## System Architecture and Infrastructure
 
-The entire pipeline is deployed on a high-performance production cloud node, migrating away from restrictive local localhost environments to eliminate compute bottlenecks and resource-induced crashes.
+The project was moved from a local development environment to a cloud-based server to avoid common local resource limitations such as memory crashes, slow processing, and restricted compute capacity.
 
 ### Hardware Infrastructure
-* **Cloud Platform:** Hetzner Cloud (Compute-Optimized Plan: **CPX62**)
-* **Compute:** 16 vCPUs (AMD EPYC™ Dedicated Virtualization Architecture)
-* **Memory:** 32 GB DDR4 ECC RAM
-* **Storage:** 80 GB High-IOPS NVMe SSD
-* **Network:** 20 TB High-Speed Transit Bandwidth
 
-### Distributed Container Ecosystem
-[cite_start]The topology is orchestrating a multi-container isolated workspace using **Docker & Docker Compose**, provisioning dedicated networks for coordinated inter-node shuffle boundaries and data replication tasks[cite: 136].
+| Requirement | Specification |
+| ----------- | ------------- |
+| Compute     | 8 vCPUs       |
+| Memory      | 16 GB RAM     |
+| Storage     | 20 GB         |
 
----
-
-## 🛠️ Technology Stack & Component Matrix
-
-| Technology | Production Version | Functional Mandate |
-| :--- | :--- | :--- |
-| **Apache Hadoop** | 3.2.1 | HDFS fault-tolerant distributed storage & YARN resource allocation [cite: 120, 121, 138] |
-| **Apache Spark** | 3.3.0 | In-memory distributed data processing engine & batch query execution [cite: 123, 138] |
-| **Apache Hive** | 3.1.2 | Analytical data warehousing layer & HiveQL structural querying [cite: 138, 139] |
-| **PySpark** | 3.3.0 | Programmatic Python API interfacing with underlying Spark core runtime [cite: 138, 142] |
-| **Scikit-Learn / XGBoost**| Latest | Statistical model execution, pipeline serialization, and metric logging [cite: 147, 148] |
-| **Docker / Compose** | Enterprise v20+ | Multi-container component orchestration and resource isolation bounds [cite: 125, 136] |
-| **Python Runtimes** | 3.9+ | Primary programmatic implementation language across processing steps [cite: 147] |
-| **Jupyter Notebooks** | Core Server | Interactive kernel development and rapid pipeline visualization execution [cite: 166] |
+The system runs as a distributed multi-container environment using Docker and Docker Compose. Each core service is deployed in its own container, allowing Hadoop, Spark, Hive, and Jupyter to work together in an isolated and reproducible setup.
 
 ---
 
-## 📈 Pipeline Stages & Functional Implementation
+## Technology Stack
 
-### 1. Data Ingestion & Distributed Storage (HDFS)
-* **Dataset Scope:** Multi-exchange financial timeseries dataset exceeding 5GB in flat volume[cite: 131, 158, 162].
-* **Ingestion Profile:** Bulk file partition chunks uploaded sequentially into the Hadoop Distributed File System (HDFS)[cite: 139].
-* **Data Metrics:** * Raw records processed: `1,835,480`
-  * Deduplicated and structural cleaned records: `1,619,136`
-  * Primary temporal bounds: `1970-01-02` $\rightarrow$ `2022-12-12`
-
-### 2. Analytical Data Warehousing (Hive & PySpark)
-* Schemas are enforced strictly at read/write layers using HiveQL definitions[cite: 139].
-* Engineered specific tracking metrics including custom delta variables like `daily_return` and binary classification metrics (`direction`)[cite: 142].
-* Distribution tracking indicates structured volume splits across dominant financial indexes:
-  * **S&P 500 (`sp500`):** 562,962 records
-  * **NASDAQ (`nasdaq`):** 384,881 records
-  * **NYSE (`nyse`):** 364,698 records
-  * **Forbes 2000 (`forbes2000`):** 306,595 records
-
-### 3. Predictive Modeling & Machine Learning
-Advanced predictive modeling maps features against multi-variable index movements using **Random Forest Classifier** and **Gradient Boosting Machine (GBM)** models[cite: 148].
-* **Features Used:** `['Close', 'Open', 'High', 'Low', 'Volume', 'daily_return', 'price_range', 'month', 'day_of_week']`
-* **Train/Test Bounds:** Evaluated using a robust deterministic split (`1,295,308` training samples; `323,828` out-of-sample testing records)[cite: 149].
-* **Visual Diagnostics:** Features importance analysis shows structural reliance on calculated delta vectors (`daily_return`) to classify temporal indicators confidently[cite: 151].
+| Technology              |     Version | Purpose                                                             |
+| ----------------------- | ----------: | ------------------------------------------------------------------- |
+| Apache Hadoop           |       3.2.1 | Distributed storage using HDFS and resource management through YARN |
+| Apache Spark            |       3.3.0 | Distributed in-memory data processing and batch execution           |
+| Apache Hive             |       3.1.2 | Data warehousing and structured querying using HiveQL               |
+| PySpark                 |       3.3.0 | Python interface for Spark-based data processing                    |
+| Scikit-Learn / XGBoost  |      Latest | Machine learning model training, evaluation, and metric reporting   |
+| Docker / Docker Compose |        v20+ | Container orchestration and service isolation                       |
+| Python                  |        3.9+ | Main programming language for data processing and modeling          |
+| Jupyter Notebook        | Core Server | Interactive development, testing, and visualization                 |
 
 ---
 
-## 🚀 Deployment & Local Replication
+## Pipeline Stages
+
+### 1. Data Ingestion and Distributed Storage
+
+The raw stock market dataset is uploaded into the Hadoop Distributed File System (HDFS). The dataset contains historical market data from multiple financial indices and has a total size of more than 5GB.
+
+Key dataset statistics:
+
+| Metric                           |                    Value |
+| -------------------------------- | -----------------------: |
+| Raw records processed            |                1,835,480 |
+| Cleaned and deduplicated records |                1,619,136 |
+| Date range                       | 1970-01-02 to 2022-12-12 |
+
+The ingestion stage prepares the raw files for distributed processing and ensures that the data can be accessed efficiently by Spark and Hive.
+
+---
+
+### 2. Data Warehousing and Transformation
+
+Hive is used to define structured schemas over the processed financial data. PySpark is then used to clean, transform, and engineer new features from the raw market values.
+
+The main engineered fields include:
+
+* `daily_return`
+* `price_range`
+* `month`
+* `day_of_week`
+* `direction`
+
+The `direction` field is used as the binary target variable for predicting whether the market movement is positive or negative.
+
+The cleaned data is distributed across the following index groups:
+
+| Index       | Records |
+| ----------- | ------: |
+| S&P 500     | 562,962 |
+| NASDAQ      | 384,881 |
+| NYSE        | 364,698 |
+| Forbes 2000 | 306,595 |
+
+---
+
+### 3. Machine Learning and Prediction
+
+The machine learning stage uses supervised classification models to predict stock market movement direction. The models are trained using historical price and volume-based features.
+
+The main models used in this project are:
+
+* Random Forest Classifier
+* Gradient Boosting Machine
+
+The selected features are:
+
+```python
+['Close', 'Open', 'High', 'Low', 'Volume', 'daily_return', 'price_range', 'month', 'day_of_week']
+```
+
+The dataset is split into training and testing sets using a deterministic train-test split:
+
+| Dataset      | Number of Records |
+| ------------ | ----------------: |
+| Training set |         1,295,308 |
+| Testing set  |           323,828 |
+
+Model evaluation is performed using standard classification metrics, including accuracy, confusion matrix analysis, ROC-AUC evaluation, and feature importance analysis.
+
+The feature importance results show that calculated market movement indicators, especially `daily_return`, play a major role in predicting the direction of market movement.
+
+---
+
+## Deployment and Local Replication
 
 ### Prerequisites
-Ensure your infrastructure environment has Docker Engine and Docker Compose plugins installed.
+
+Before running the project, make sure Docker and Docker Compose are installed:
+
 ```bash
 docker --version
 docker-compose --version
 ```
 
-1. Fire up the Cluster
-Clone this repository to your Hetzner Instance or local terminal context and deploy the active stack daemon:
+### Clone the Repository
+
 ```bash
 git clone https://github.com/Negin-Golchehreh/stock-market.git
 cd stock-market
+```
+
+### Start the Cluster
+
+```bash
 docker-compose up -d
 ```
-Ensure that the spark-master, spark-worker, namenode, datanode, and hive-server services are perfectly healthy.
 
-3. Running the Analytics Jupyter Workspace
-Locate the container binding authentication token via docker logs to log into the UI workspace safely:
+After starting the containers, check that the required services are running correctly, including:
+
+* Spark master
+* Spark worker
+* Hadoop namenode
+* Hadoop datanode
+* Hive server
+* Jupyter notebook container
+
+### Access the Jupyter Workspace
+
+To get the Jupyter authentication token, run:
+
+```bash
 docker logs jupyter-spark-notebook
+```
 
-Open your preferred web browser window and route traffic to: http://YOUR-SERVER-IP:8888📊 Performance DashboardsThe programmatic execution exports visual diagnostic plots automatically to trace behavioral patterns:  results_dashboard.png: Documents the comparative model metrics, comprehensive ROC-AUC curves, confusion matrices, and feature importance mappings.  exchange_analysis.png: Traces the structural index directional variances and seasonal average monthly adjustments across the historical dataset.  📝 Academic AcknowledgementModule Code: Big Data Analytics   Documentation Standard: BSBI Template Guidelines (Harvard Referencing Architecture Style).  
+Then open Jupyter in your browser:
+
+```text
+http://YOUR-SERVER-IP:8888
+```
+
+---
+
+## Output Dashboards and Visual Reports
+
+The pipeline exports visual outputs to help analyze model performance and market behavior.
+
+### `results_dashboard.png`
+
+This dashboard includes:
+
+* Model performance comparison
+* ROC-AUC curves
+* Confusion matrices
+* Feature importance results
+
+### `exchange_analysis.png`
+
+This visualization includes:
+
+* Market direction distribution across exchanges
+* Index-level movement comparison
+* Monthly and seasonal trend analysis
+
+---
+
+## Academic Context
+
+This project was completed as part of the Big Data Analytics module for the MSc Data Analytics programme at BSBI.
+
+The project follows an academic reporting structure and uses Harvard-style referencing in the accompanying report documentation.
