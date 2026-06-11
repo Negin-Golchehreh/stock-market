@@ -110,9 +110,11 @@ The feature importance results show that calculated market movement indicators, 
 
 ---
 
-## Deployment and Local Replication
+## Deployment and Replication
 
 ### Prerequisites
+
+You can also use the manual method and run the scripts directly in Jupyter. To do this, please read the `اHELPER.md` file.
 
 Before running the project, make sure Docker and Docker Compose are installed:
 
