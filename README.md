@@ -76,7 +76,7 @@ docker-compose --version
 Clone this repository to your Hetzner Instance or local terminal context and deploy the active stack daemon:
 ```bash
 git clone https://github.com/Negin-Golchehreh/stock-market.git
-cd your-repo-name
+cd stock-market
 docker-compose up -d
 ```
 Ensure that the spark-master, spark-worker, namenode, datanode, and hive-server services are perfectly healthy.
@@ -85,4 +85,4 @@ Ensure that the spark-master, spark-worker, namenode, datanode, and hive-server 
 Locate the container binding authentication token via docker logs to log into the UI workspace safely:
 docker logs jupyter-spark-notebook
 
-Open your preferred web browser window and route traffic to: http://your-server-ip:8888📊 Performance DashboardsThe programmatic execution exports visual diagnostic plots automatically to trace behavioral patterns:  results_dashboard.png: Documents the comparative model metrics, comprehensive ROC-AUC curves, confusion matrices, and feature importance mappings.  exchange_analysis.png: Traces the structural index directional variances and seasonal average monthly adjustments across the historical dataset.  📝 Academic AcknowledgementModule Code: Big Data Analytics   Documentation Standard: BSBI Template Guidelines (Harvard Referencing Architecture Style).  
+Open your preferred web browser window and route traffic to: http://YOUR-SERVER-IP:8888📊 Performance DashboardsThe programmatic execution exports visual diagnostic plots automatically to trace behavioral patterns:  results_dashboard.png: Documents the comparative model metrics, comprehensive ROC-AUC curves, confusion matrices, and feature importance mappings.  exchange_analysis.png: Traces the structural index directional variances and seasonal average monthly adjustments across the historical dataset.  📝 Academic AcknowledgementModule Code: Big Data Analytics   Documentation Standard: BSBI Template Guidelines (Harvard Referencing Architecture Style).  
